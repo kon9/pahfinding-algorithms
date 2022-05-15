@@ -1,8 +1,8 @@
 class Graph {
-  constructor() {
+  constructor(startNode, endNode) {
     this.nodes = [];
-    this.startNode = 710;
-    this.endNode = 719;
+    this.startNode = startNode;
+    this.endNode = endNode;
   }
 
   addNode(value, x, y) {

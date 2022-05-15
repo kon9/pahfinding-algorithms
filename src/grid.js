@@ -4,18 +4,13 @@ const bfs = require("/algorithms/bfs.js");
 const dfs = require("/algorithms/dfs.js");
 const dijkstra = require("/algorithms/dijkstra.js");
 const astar = require("/algorithms/astar.js");
-// import bfs from ;
-// import dfs from ;
-// import dijkstra from ;
-// import astar from ;
-// import { binaryMaze } from "./mazeAlgorithms/binaryMazeAlgorithm.js";
 class Grid {
   constructor(row, col) {
     this.grid = document.getElementById("grid");
-    this.col = col; //63
-    this.row = row; //26
+    this.col = col;
+    this.row = row;
     this.speed = 1;
-    this.graph = new Graph();
+    this.graph = new Graph(710, 719);
     this.isAlgComleted = false;
     this.startPressed = false;
     this.endPressed = false;
@@ -37,7 +32,6 @@ class Grid {
     for (let i = 0; i < this.row; i++) {
       tableHtml += `<tr id="row ${i}">`;
       for (let j = 0; j < this.col; j++) {
-        //Добавляем узлы и ребра графу
         this.graph.addNode(nodeId, j, i);
         if (i > 0 && j > 0) {
           this.graph.addEdge(nodeId, nodeId - this.col);
@@ -46,7 +40,6 @@ class Grid {
         if (i === 0 && j > 0) this.graph.addEdge(nodeId, nodeId - 1);
         if (j === 0 && i > 0) this.graph.addEdge(nodeId, nodeId - this.col);
 
-        //Отрисовываем таблицу
         if (!(nodeId === this.graph.startNode || nodeId === this.graph.endNode))
           tableHtml += `<td id="${nodeId}" class="unvisited"></td>`;
         else if (nodeId === this.graph.startNode)
