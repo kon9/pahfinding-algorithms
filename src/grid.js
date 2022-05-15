@@ -4,6 +4,7 @@ const bfs = require("/algorithms/bfs.js");
 const dfs = require("/algorithms/dfs.js");
 const dijkstra = require("/algorithms/dijkstra.js");
 const astar = require("/algorithms/astar.js");
+const randomMaze = require("./mazeAlgorithms/randomMaze.js");
 class Grid {
   constructor(row, col) {
     this.grid = document.getElementById("grid");
@@ -24,6 +25,7 @@ class Grid {
     this.createGraph();
     this.addEventListeners();
     this.addButtons();
+    console.log(this.graph.nodes);
   }
 
   createGrid() {
@@ -379,6 +381,11 @@ class Grid {
           speed
         );
       };
+    };
+
+    document.getElementById("randomMazeBtn").onclick = () => {
+      this.clearGrid();
+      randomMaze(this.graph.nodes);
     };
   }
 }
