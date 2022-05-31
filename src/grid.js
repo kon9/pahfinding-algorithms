@@ -4,15 +4,21 @@ const bfs = require("/algorithms/bfs.js");
 const dfs = require("/algorithms/dfs.js");
 const dijkstra = require("/algorithms/dijkstra.js");
 const astar = require("/algorithms/astar.js");
+const bidirectionalAstar = require("/algorithms/bidirectionalAstar.js");
+const bidirectionalDijkstra = require("/algorithms/bidirectionalDijkstra.js");
 const randomMaze = require("./mazeAlgorithms/randomMaze.js");
+const backTrackingMaze = require("./mazeAlgorithms/backTrackingMaze.js");
+
 class Grid {
   constructor(row, col) {
     this.grid = document.getElementById("grid");
     this.col = col;
     this.row = row;
+    this.graph = new Graph();
+    this.startNode = 824;
+    this.endNode = 851;
     this.speed = 1;
-    this.graph = new Graph(710, 719);
-    this.isAlgComleted = false;
+    this.isAlgCompleted = false;
     this.startPressed = false;
     this.endPressed = false;
     this.isPressed = false;
@@ -25,7 +31,6 @@ class Grid {
     this.createGraph();
     this.addEventListeners();
     this.addButtons();
-    console.log(this.graph.nodes);
   }
 
   createGrid() {
@@ -42,11 +47,11 @@ class Grid {
         if (i === 0 && j > 0) this.graph.addEdge(nodeId, nodeId - 1);
         if (j === 0 && i > 0) this.graph.addEdge(nodeId, nodeId - this.col);
 
-        if (!(nodeId === this.graph.startNode || nodeId === this.graph.endNode))
+        if (!(nodeId === this.startNode || nodeId === this.endNode))
           tableHtml += `<td id="${nodeId}" class="unvisited"></td>`;
-        else if (nodeId === this.graph.startNode)
+        else if (nodeId === this.startNode)
           tableHtml += `<td id="${nodeId}" class="start"></td>`;
-        else if (nodeId === this.graph.endNode)
+        else if (nodeId === this.endNode)
           tableHtml += `<td id="${nodeId}" class="end"></td>`;
         nodeId++;
       }
@@ -78,15 +83,19 @@ class Grid {
           nodeId++;
           continue;
         }
-        if (curNode.className === "visited-weight") {
+        if (
+          curNode.className === "visited-weight" ||
+          curNode.className === "weight-path" ||
+          curNode.className === "instant-weight-path"
+        ) {
           curNode.className = "weight";
           nodeId++;
           continue;
         }
-        if (!(nodeId === this.graph.startNode || nodeId === this.graph.endNode))
+        if (!(nodeId === this.startNode || nodeId === this.endNode))
           curNode.className = "unvisited";
-        if (nodeId === this.graph.startNode) curNode.className = "start";
-        if (nodeId === this.graph.endNode) curNode.className = "end";
+        if (nodeId === this.startNode) curNode.className = "start";
+        if (nodeId === this.endNode) curNode.className = "end";
         nodeId++;
       }
     }
@@ -97,10 +106,10 @@ class Grid {
     for (let i = 0; i < this.row; i++) {
       for (let j = 0; j < this.col; j++) {
         let curNode = document.getElementById(`${nodeId}`);
-        if (!(nodeId === this.graph.startNode || nodeId === this.graph.endNode))
+        if (!(nodeId === this.startNode || nodeId === this.endNode))
           curNode.className = "unvisited";
-        if (nodeId === this.graph.startNode) curNode.className = "start";
-        if (nodeId === this.graph.endNode) curNode.className = "end";
+        if (nodeId === this.startNode) curNode.className = "start";
+        if (nodeId === this.endNode) curNode.className = "end";
         this.graph.removeWall(nodeId);
         nodeId++;
       }
@@ -116,49 +125,59 @@ class Grid {
           nodeId++;
           continue;
         }
-        if (!(nodeId === this.graph.startNode || nodeId === this.graph.endNode))
+        if (!(nodeId === this.startNode || nodeId === this.endNode))
           curNode.className = "unvisited";
-        if (nodeId === this.graph.startNode) curNode.className = "start";
-        if (nodeId === this.graph.endNode) curNode.className = "end";
+        if (nodeId === this.startNode) curNode.className = "start";
+        if (nodeId === this.endNode) curNode.className = "end";
         this.graph.removeWeight(nodeId);
         nodeId++;
       }
     }
   }
 
-  async drawPath(steps, speed) {
-    let path = [];
-    let currentNode = this.graph.endNode;
-    let node = document.getElementById(`${currentNode}`);
-    node.classList = "end";
-    while (parseInt(currentNode) !== this.graph.startNode) {
-      path.unshift(currentNode);
-      currentNode = steps[currentNode];
+  async drawPath(steps, start, end, speed) {
+    let currentNode = end;
+    let node = document.getElementById(`${this.endNode}`);
+    node.className = "end";
+    while (parseInt(currentNode) !== start) {
       await sleep(speed);
+      currentNode = steps[currentNode];
       let node = document.getElementById(`${currentNode}`);
-
-      if (this.isAlgComleted) {
-        node.className = "instant-path";
+      if (this.isAlgCompleted) {
+        if (
+          node.className === "weight" ||
+          node.className === "visited-weight" ||
+          node.className === "instant-weight-path"
+        )
+          node.className = "instant-weight-path";
+        else node.className = "instant-path";
       } else {
-        node.className = "path";
+        if (
+          node.className === "weight" ||
+          node.className === "visited-weight" ||
+          node.className === "instant-weight-path"
+        )
+          node.className = "weight-path";
+        else node.className = "path";
       }
-      if (node.id === this.graph.startNode) node.className = "start";
     }
-
-    node = document.getElementById(`${currentNode}`);
+    node = document.getElementById(`${this.startNode}`);
     node.className = "start";
-    this.isAlgComleted = true;
+    node = document.getElementById(`${this.endNode}`);
+    node.className = "end";
+    this.isAlgCompleted = true;
   }
 
   nodeUpdate(nodeId) {
     let node = document.getElementById(`${nodeId}`);
-    if (parseInt(nodeId) === this.graph.startNode) return;
+    if (parseInt(nodeId) === this.startNode) return;
+    if (parseInt(nodeId) === this.endNode) return;
     if (this.graph.nodes[nodeId].isWall) return;
     if (this.graph.nodes[nodeId].isWeight) {
       node.className = "visited-weight";
       return;
     }
-    if (this.isAlgComleted) {
+    if (this.isAlgCompleted) {
       node.className = "instant-visit";
       return;
     }
@@ -167,11 +186,11 @@ class Grid {
 
   moveStartNode(ev) {
     if (ev.target.id === "grid") return;
-    let oldNode = document.getElementById(`${this.graph.startNode}`);
+    let oldNode = document.getElementById(`${this.startNode}`);
     oldNode.className = "unvisited";
     ev.target.className = "start";
-    this.graph.startNode = parseInt(ev.target.id);
-    if (this.isAlgComleted) {
+    this.startNode = parseInt(ev.target.id);
+    if (this.isAlgCompleted) {
       this.clearGrid();
       this.currentAlgorithm(0);
     }
@@ -179,11 +198,11 @@ class Grid {
 
   moveEndNode(ev) {
     if (ev.target.id === "grid") return;
-    let oldNode = document.getElementById(`${this.graph.endNode}`);
+    let oldNode = document.getElementById(`${this.endNode}`);
     oldNode.className = "unvisited";
     ev.target.className = "end";
-    this.graph.endNode = parseInt(ev.target.id);
-    if (this.isAlgComleted) {
+    this.endNode = parseInt(ev.target.id);
+    if (this.isAlgCompleted) {
       this.clearGrid();
       this.currentAlgorithm(0);
     }
@@ -203,7 +222,7 @@ class Grid {
       if (ev.target.className === "wall") {
         ev.target.className = "unvisited";
         this.graph.removeWall(node);
-        if (this.isAlgComleted) this.currentAlgorithm(0);
+        if (this.isAlgCompleted) this.currentAlgorithm(0);
         return;
       }
       if (ev.target.className !== "start" && ev.target.className !== "end") {
@@ -224,13 +243,13 @@ class Grid {
         ev.target.className = "weight";
         this.graph.removeWall(node);
         this.graph.addWeight(node);
-        if (this.isAlgComleted) this.currentAlgorithm(0);
+        if (this.isAlgCompleted) this.currentAlgorithm(0);
         return;
       }
       if (ev.target.className === "weight") {
         ev.target.className = "unvisited";
         this.graph.removeWeight(node);
-        if (this.isAlgComleted) this.currentAlgorithm(0);
+        if (this.isAlgCompleted) this.currentAlgorithm(0);
         return;
       }
       if (ev.target.className !== "start" && ev.target.className !== "end") {
@@ -247,11 +266,11 @@ class Grid {
         this.click_handler(e);
         return;
       }
-      if (parseInt(e.target.id) === this.graph.startNode) {
+      if (parseInt(e.target.id) === this.startNode) {
         this.startPressed = true;
         return;
       }
-      if (parseInt(e.target.id) === this.graph.endNode) {
+      if (parseInt(e.target.id) === this.endNode) {
         this.endPressed = true;
         return;
       }
@@ -286,15 +305,14 @@ class Grid {
 
   addButtons() {
     document.getElementById("btnStart").onclick = () => {
-      console.log("startbtn clisk");
-      this.isAlgComleted = false;
+      this.isAlgCompleted = false;
       if (this.currentAlgorithm === null) {
         this.currentAlgorithm = (speed = this.speed) => {
           this.clearGrid();
           bfs(
             this.graph.nodes,
-            this.graph.startNode,
-            this.graph.endNode,
+            this.startNode,
+            this.endNode,
             this.nodeUpdate.bind(this),
             this.drawPath.bind(this),
             speed
@@ -305,17 +323,17 @@ class Grid {
     };
 
     document.getElementById("btnClear").onclick = () => {
-      this.isAlgComleted = false;
+      this.isAlgCompleted = false;
       this.clearGrid();
     };
 
     document.getElementById("btnClearWalls").onclick = () => {
-      this.isAlgComleted = false;
+      this.isAlgCompleted = false;
       this.clearWalls();
     };
 
     document.getElementById("btnClearWeights").onclick = () => {
-      this.isAlgComleted = false;
+      this.isAlgCompleted = false;
       this.clearWeights();
     };
 
@@ -332,8 +350,8 @@ class Grid {
         this.clearGrid();
         bfs(
           this.graph.nodes,
-          this.graph.startNode,
-          this.graph.endNode,
+          this.startNode,
+          this.endNode,
           this.nodeUpdate.bind(this),
           this.drawPath.bind(this),
           speed
@@ -346,8 +364,8 @@ class Grid {
         this.clearGrid();
         dfs(
           this.graph.nodes,
-          this.graph.startNode,
-          this.graph.endNode,
+          this.startNode,
+          this.endNode,
           this.nodeUpdate.bind(this),
           this.drawPath.bind(this),
           speed
@@ -359,8 +377,22 @@ class Grid {
         this.clearGrid();
         astar(
           this.graph.nodes,
-          this.graph.startNode,
-          this.graph.endNode,
+          this.startNode,
+          this.endNode,
+          this.nodeUpdate.bind(this),
+          this.drawPath.bind(this),
+          speed
+        );
+      };
+    };
+
+    document.getElementById("biAstarAlgBtn").onclick = () => {
+      this.currentAlgorithm = (speed = this.speed) => {
+        this.clearGrid();
+        bidirectionalAstar(
+          this.graph.nodes,
+          this.startNode,
+          this.endNode,
           this.nodeUpdate.bind(this),
           this.drawPath.bind(this),
           speed
@@ -374,8 +406,23 @@ class Grid {
         this.clearGrid();
         dijkstra(
           this.graph.nodes,
-          this.graph.startNode,
-          this.graph.endNode,
+          this.startNode,
+          this.endNode,
+          this.nodeUpdate.bind(this),
+          this.drawPath.bind(this),
+          speed
+        );
+      };
+    };
+
+    document.getElementById("bidirectionalDijkstraAlgBtn").onclick = () => {
+      this.clearGrid();
+      this.currentAlgorithm = (speed = this.speed) => {
+        this.clearGrid();
+        bidirectionalDijkstra(
+          this.graph.nodes,
+          this.startNode,
+          this.endNode,
           this.nodeUpdate.bind(this),
           this.drawPath.bind(this),
           speed
@@ -386,6 +433,11 @@ class Grid {
     document.getElementById("randomMazeBtn").onclick = () => {
       this.clearGrid();
       randomMaze(this.graph.nodes);
+    };
+
+    document.getElementById("backTrackingMazeBtn").onclick = () => {
+      this.clearGrid();
+      backTrackingMaze(this.graph.nodes, this.startNode);
     };
   }
 }

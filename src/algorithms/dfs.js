@@ -24,6 +24,6 @@ async function dfs(nodes, startNode, endNode, nodeUpdate, drawPath, speed) {
     handleNode(activeNode);
     if (activeNode === endNode) break;
   }
-  drawPath(steps, speed);
+  drawPath(steps, startNode, endNode, speed);
 }
 module.exports = dfs;

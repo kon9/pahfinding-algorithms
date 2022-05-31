@@ -58,7 +58,7 @@ async function dijkstra(
 
     handleNode(currentNode);
   }
-  drawPath(steps, speed);
+  drawPath(steps, startNode, endNode, speed);
 }
 
 module.exports = dijkstra;

@@ -65,6 +65,6 @@ async function astar(nodes, startNode, endNode, nodeUpdate, drawPath, speed) {
     let d2 = Math.abs(nodes[nodeId].positionY - nodes[endNode].positionY);
     return d1 + d2;
   }
-  drawPath(steps, speed);
+  drawPath(steps, startNode, endNode, speed);
 }
 module.exports = astar;

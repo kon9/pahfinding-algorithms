@@ -34,6 +34,10 @@ class PriorityQueue {
   isEmpty() {
     return this.items.length == 0;
   }
+
+  emptyQueue() {
+    this.items = [];
+  }
 }
 
 module.exports = PriorityQueue;

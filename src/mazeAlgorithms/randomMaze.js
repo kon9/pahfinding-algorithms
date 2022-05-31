@@ -1,9 +1,9 @@
-const PriorityQueue = require("../utils/PriorityQueue");
-
-async function randomMaze(nodes) {
+function randomMaze(nodes) {
   for (let i = 1; i < nodes.length; i++) {
     addWall(nodes[i][1]);
+    addWall(nodes[i][0]);
   }
+  addWall(nodes.length - 1);
   for (let i = 1; i < nodes.length; i++) {
     let direction = getRandomInt(1, 4);
     removeWall(nodes[i][direction]);
