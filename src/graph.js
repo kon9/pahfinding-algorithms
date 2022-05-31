@@ -1,8 +1,6 @@
 class Graph {
-  constructor(startNode, endNode) {
+  constructor() {
     this.nodes = [];
-    this.startNode = startNode;
-    this.endNode = endNode;
   }
 
   addNode(value, x, y) {
@@ -23,32 +21,16 @@ class Graph {
     this.nodes[node].isWall = true;
   }
 
+  removeWall(node) {
+    this.nodes[node].isWall = false;
+  }
+
   addWeight(node) {
     this.nodes[node].isWeight = true;
   }
 
   removeWeight(node) {
     this.nodes[node].isWeight = false;
-  }
-
-  removeWall(node) {
-    this.nodes[node].isWall = false;
-  }
-
-  setStartNode(value) {
-    this.startNode = value;
-  }
-
-  setEndNode(value) {
-    this.endNode = value;
-  }
-
-  changeNodeStartState(value) {
-    this.nodes[value][0].isStart = !this.nodes[value][0].isStart;
-  }
-
-  changeNodeEndState(value) {
-    this.nodes[value][1] = !this.nodes[value][1];
   }
 }
 
