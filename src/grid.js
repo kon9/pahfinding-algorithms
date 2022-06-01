@@ -7,7 +7,10 @@ const astar = require("/algorithms/astar.js");
 const bidirectionalAstar = require("/algorithms/bidirectionalAstar.js");
 const bidirectionalDijkstra = require("/algorithms/bidirectionalDijkstra.js");
 const randomMaze = require("./mazeAlgorithms/randomMaze.js");
-const backTrackingMaze = require("./mazeAlgorithms/backTrackingMaze.js");
+// const backTrackingMaze = require("./mazeAlgorithms/backTrackingMaze.js");
+const firstPattern = require("./mazeAlgorithms/firstPattern.js");
+const secondPattern = require("./mazeAlgorithms/secondPattern.js");
+const thirdPattern = require("./mazeAlgorithms/thirdPattern.js");
 
 class Grid {
   constructor(row, col) {
@@ -209,7 +212,7 @@ class Grid {
   }
   click_handler(ev) {
     let node = ev.target.id;
-    if (ev.which === 1) {
+    if (ev.which === 1 && !this.isWheelPressed) {
       if (
         ev.target.className === "visited" ||
         ev.target.className === "instant-visit" ||
@@ -239,20 +242,17 @@ class Grid {
       ) {
         this.currentAlgorithm(0);
       }
-      if (ev.target.className === "wall") {
-        ev.target.className = "weight";
-        this.graph.removeWall(node);
-        this.graph.addWeight(node);
-        if (this.isAlgCompleted) this.currentAlgorithm(0);
-        return;
-      }
       if (ev.target.className === "weight") {
         ev.target.className = "unvisited";
         this.graph.removeWeight(node);
         if (this.isAlgCompleted) this.currentAlgorithm(0);
         return;
       }
-      if (ev.target.className !== "start" && ev.target.className !== "end") {
+      if (
+        ev.target.className !== "start" &&
+        ev.target.className !== "end" &&
+        ev.target.className !== "wall"
+      ) {
         ev.target.className = "weight";
         this.graph.addWeight(parseInt(node));
       }
@@ -435,9 +435,24 @@ class Grid {
       randomMaze(this.graph.nodes);
     };
 
-    document.getElementById("backTrackingMazeBtn").onclick = () => {
+    // document.getElementById("backTrackingMazeBtn").onclick = () => {
+    //   this.clearGrid();
+    //   backTrackingMaze(this.graph.nodes, this.startNode);
+    // };
+    document.getElementById("firstPatternBtn").onclick = () => {
       this.clearGrid();
-      backTrackingMaze(this.graph.nodes, this.startNode);
+      this.clearWalls();
+      firstPattern(this.graph.nodes, this.row, this.col);
+    };
+    document.getElementById("secondPatternBtn").onclick = () => {
+      this.clearGrid();
+      this.clearWalls();
+      secondPattern(this.graph.nodes, this.row, this.col);
+    };
+    document.getElementById("thirdPatternBtn").onclick = () => {
+      this.clearGrid();
+      this.clearWalls();
+      thirdPattern(this.graph.nodes, this.row, this.col);
     };
   }
 }
