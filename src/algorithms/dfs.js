@@ -1,13 +1,14 @@
 const sleep = require("../utils/sleep.js");
-async function dfs(nodes, startNode, endNode, nodeUpdate, drawPath, speed) {
+const nodeUpdate = require("../utils/nodeUpdate.js");
+const drawPath = require("../utils/drawPath.js");
+
+async function dfs(nodes, startNode, endNode, speed) {
   let stack = [startNode];
   let visited = { [startNode]: 1 };
   let steps = { [startNode]: null };
   function handleNode(node) {
-    nodeUpdate(node);
-
+    nodeUpdate(node, speed);
     let reversedNeighboursList = [...nodes[node]].reverse();
-
     reversedNeighboursList.forEach((neighbour) => {
       if (!visited[neighbour]) {
         steps[neighbour] = node;

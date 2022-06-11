@@ -1,13 +1,15 @@
 const sleep = require("../utils/sleep.js");
+const nodeUpdate = require("../utils/nodeUpdate.js");
+const drawPath = require("../utils/drawPath.js");
 
-async function bfs(nodes, startNode, endNode, nodeUpdate, drawPath, speed) {
+async function bfs(nodes, startNode, endNode, speed) {
   let queue = [startNode];
   let visited = { [startNode]: 1 };
   let distance = { [startNode]: 0 };
   let steps = { [startNode]: null };
   function handleNode(node) {
-    nodeUpdate(node);
-    let neighboursList = nodes[node].slice(0, 5);
+    nodeUpdate(node, speed);
+    let neighboursList = nodes[node];
     neighboursList.forEach((neighbour) => {
       if (!visited[neighbour]) {
         visited[neighbour] = 1;

@@ -1,14 +1,15 @@
 const sleep = require("../utils/sleep.js");
+const nodeUpdate = require("../utils/nodeUpdate.js");
+const drawPath = require("../utils/drawPath.js");
 const PriorityQueue = require("../utils/PriorityQueue");
 
-async function astar(nodes, startNode, endNode, nodeUpdate, drawPath, speed) {
+async function astar(nodes, startNode, endNode, speed) {
   const queue = new PriorityQueue();
   let distances = {};
   let visited = {};
   let steps = {};
   let heuristic = {};
-  let nodesKeys = Object.keys(nodes);
-  nodesKeys.forEach((node) => {
+  Object.keys(nodes).forEach((node) => {
     distances[node] = Infinity;
     steps[node] = null;
     heuristic[node] = Infinity;
@@ -18,11 +19,18 @@ async function astar(nodes, startNode, endNode, nodeUpdate, drawPath, speed) {
   distances[startNode] = 0;
   queue.insert(startNode, manhattan(startNode));
 
-  function handleNode(node) {
-    nodeUpdate(node);
-    let activeNodeDistance = distances[node];
+  while (!queue.isEmpty()) {
+    let currentNode = queue.extract_minimum();
+    if (currentNode === endNode) break;
+    await sleep(speed);
+    handleNode(currentNode);
+  }
+  drawPath(steps, startNode, endNode, speed);
 
-    let neighbours = nodes[node].slice(0, 5);
+  function handleNode(node) {
+    nodeUpdate(node, speed);
+    let activeNodeDistance = distances[node];
+    let neighbours = nodes[node];
     neighbours.forEach((neighbourNode) => {
       let currentNeighbourDistance = distances[neighbourNode];
       let newNeighbourDistance;
@@ -47,17 +55,6 @@ async function astar(nodes, startNode, endNode, nodeUpdate, drawPath, speed) {
     visited[node] = true;
   }
 
-  while (!queue.isEmpty()) {
-    let currentNode = queue.extract_minimum();
-
-    if (currentNode === endNode) {
-      break;
-    }
-    await sleep(speed);
-
-    handleNode(currentNode);
-  }
-
   function manhattan(nodeId) {
     // let d1 = Math.pow(nodes[nodeId].positionX - nodes[endNode].positionX, 2);
     // let d2 = Math.pow(nodes[nodeId].positionY - nodes[endNode].positionY, 2);
@@ -65,6 +62,6 @@ async function astar(nodes, startNode, endNode, nodeUpdate, drawPath, speed) {
     let d2 = Math.abs(nodes[nodeId].positionY - nodes[endNode].positionY);
     return d1 + d2;
   }
-  drawPath(steps, startNode, endNode, speed);
 }
+
 module.exports = astar;

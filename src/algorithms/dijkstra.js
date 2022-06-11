@@ -1,32 +1,23 @@
 const sleep = require("../utils/sleep.js");
+const nodeUpdate = require("../utils/nodeUpdate.js");
+const drawPath = require("../utils/drawPath.js");
 const PriorityQueue = require("../utils/PriorityQueue");
 
-async function dijkstra(
-  nodes,
-  startNode,
-  endNode,
-  nodeUpdate,
-  drawPath,
-  speed
-) {
+async function dijkstra(nodes, startNode, endNode, speed) {
   const queue = new PriorityQueue();
   let distances = {};
-  let visited = {};
   let steps = {};
-  let nodesKeys = Object.keys(nodes);
-  nodesKeys.forEach((node) => {
+  Object.keys(nodes).forEach((node) => {
     distances[node] = Infinity;
     steps[node] = null;
-    visited[node] = false;
   });
   distances[startNode] = 0;
   queue.insert(startNode, 1);
 
   function handleNode(node) {
-    nodeUpdate(node);
+    nodeUpdate(node, speed);
     let activeNodeDistance = distances[node];
-
-    let neighbours = nodes[node].slice(0, 5);
+    let neighbours = nodes[node];
     neighbours.forEach((neighbourNode) => {
       let currentNeighbourDistance = distances[neighbourNode];
       let newNeighbourDistance;
@@ -40,12 +31,8 @@ async function dijkstra(
       if (newNeighbourDistance < currentNeighbourDistance) {
         distances[neighbourNode] = newNeighbourDistance;
         steps[neighbourNode] = node;
-        if (!visited[neighbourNode]) {
-          queue.insert(neighbourNode, activeNodeDistance);
-          visited[neighbourNode] = true;
-        }
+        queue.insert(neighbourNode, activeNodeDistance);
       }
-      visited[node] = true;
     });
   }
 
