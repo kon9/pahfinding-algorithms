@@ -4,8 +4,6 @@ const bfs = require("/algorithms/bfs.js");
 const dfs = require("/algorithms/dfs.js");
 const dijkstra = require("/algorithms/dijkstra.js");
 const astar = require("/algorithms/astar.js");
-const bidirectionalAstar = require("/algorithms/bidirectionalAstar.js");
-const bidirectionalDijkstra = require("/algorithms/bidirectionalDijkstra.js");
 const randomMaze = require("./mazeAlgorithms/randomMaze.js");
 // const backTrackingMaze = require("./mazeAlgorithms/backTrackingMaze.js");
 const firstPattern = require("./mazeAlgorithms/firstPattern.js");
@@ -19,7 +17,7 @@ class Grid {
     this.row = row;
     this.graph = new Graph();
     this.startNode = 824;
-    this.endNode = 851;
+    this.endNode = 851; //851
     this.speed = 1;
     this.isAlgCompleted = false;
     this.startPressed = false;
@@ -42,14 +40,6 @@ class Grid {
     for (let i = 0; i < this.row; i++) {
       tableHtml += `<tr id="row ${i}">`;
       for (let j = 0; j < this.col; j++) {
-        this.graph.addNode(nodeId, j, i);
-        if (i > 0 && j > 0) {
-          this.graph.addEdge(nodeId, nodeId - this.col);
-          this.graph.addEdge(nodeId, nodeId - 1);
-        }
-        if (i === 0 && j > 0) this.graph.addEdge(nodeId, nodeId - 1);
-        if (j === 0 && i > 0) this.graph.addEdge(nodeId, nodeId - this.col);
-
         if (!(nodeId === this.startNode || nodeId === this.endNode))
           tableHtml += `<td id="${nodeId}" class="unvisited"></td>`;
         else if (nodeId === this.startNode)
@@ -136,55 +126,6 @@ class Grid {
         nodeId++;
       }
     }
-  }
-
-  async drawPath(steps, start, end, speed) {
-    let currentNode = end;
-    let node = document.getElementById(`${this.endNode}`);
-    node.className = "end";
-    while (parseInt(currentNode) !== start) {
-      await sleep(speed);
-      currentNode = steps[currentNode];
-      let node = document.getElementById(`${currentNode}`);
-      if (this.isAlgCompleted) {
-        if (
-          node.className === "weight" ||
-          node.className === "visited-weight" ||
-          node.className === "instant-weight-path"
-        )
-          node.className = "instant-weight-path";
-        else node.className = "instant-path";
-      } else {
-        if (
-          node.className === "weight" ||
-          node.className === "visited-weight" ||
-          node.className === "instant-weight-path"
-        )
-          node.className = "weight-path";
-        else node.className = "path";
-      }
-    }
-    node = document.getElementById(`${this.startNode}`);
-    node.className = "start";
-    node = document.getElementById(`${this.endNode}`);
-    node.className = "end";
-    this.isAlgCompleted = true;
-  }
-
-  nodeUpdate(nodeId) {
-    let node = document.getElementById(`${nodeId}`);
-    if (parseInt(nodeId) === this.startNode) return;
-    if (parseInt(nodeId) === this.endNode) return;
-    if (this.graph.nodes[nodeId].isWall) return;
-    if (this.graph.nodes[nodeId].isWeight) {
-      node.className = "visited-weight";
-      return;
-    }
-    if (this.isAlgCompleted) {
-      node.className = "instant-visit";
-      return;
-    }
-    node.className = "visited";
   }
 
   moveStartNode(ev) {
@@ -309,14 +250,8 @@ class Grid {
       if (this.currentAlgorithm === null) {
         this.currentAlgorithm = (speed = this.speed) => {
           this.clearGrid();
-          bfs(
-            this.graph.nodes,
-            this.startNode,
-            this.endNode,
-            this.nodeUpdate.bind(this),
-            this.drawPath.bind(this),
-            speed
-          );
+          bfs(this.graph.nodes, this.startNode, this.endNode, speed);
+          this.isAlgCompleted = true;
         };
       }
       this.currentAlgorithm();
@@ -338,65 +273,31 @@ class Grid {
     };
 
     document.getElementById("instantSpeed").onclick = () => (this.speed = 0);
-
     document.getElementById("fastSpeed").onclick = () => (this.speed = 1);
-
     document.getElementById("mediumSpeed").onclick = () => (this.speed = 30);
-
     document.getElementById("slowSpeed").onclick = () => (this.speed = 100);
 
     document.getElementById("bfsAlgBtn").onclick = () => {
       this.currentAlgorithm = (speed = this.speed) => {
         this.clearGrid();
-        bfs(
-          this.graph.nodes,
-          this.startNode,
-          this.endNode,
-          this.nodeUpdate.bind(this),
-          this.drawPath.bind(this),
-          speed
-        );
+        bfs(this.graph.nodes, this.startNode, this.endNode, speed);
+        this.isAlgCompleted = true;
       };
     };
 
     document.getElementById("dfsAlgBtn").onclick = () => {
       this.currentAlgorithm = (speed = this.speed) => {
         this.clearGrid();
-        dfs(
-          this.graph.nodes,
-          this.startNode,
-          this.endNode,
-          this.nodeUpdate.bind(this),
-          this.drawPath.bind(this),
-          speed
-        );
-      };
-    };
-    document.getElementById("astarAlgBtn").onclick = () => {
-      this.currentAlgorithm = (speed = this.speed) => {
-        this.clearGrid();
-        astar(
-          this.graph.nodes,
-          this.startNode,
-          this.endNode,
-          this.nodeUpdate.bind(this),
-          this.drawPath.bind(this),
-          speed
-        );
+        dfs(this.graph.nodes, this.startNode, this.endNode, speed);
+        this.isAlgCompleted = true;
       };
     };
 
-    document.getElementById("biAstarAlgBtn").onclick = () => {
+    document.getElementById("astarAlgBtn").onclick = () => {
       this.currentAlgorithm = (speed = this.speed) => {
         this.clearGrid();
-        bidirectionalAstar(
-          this.graph.nodes,
-          this.startNode,
-          this.endNode,
-          this.nodeUpdate.bind(this),
-          this.drawPath.bind(this),
-          speed
-        );
+        astar(this.graph.nodes, this.startNode, this.endNode, speed);
+        this.isAlgCompleted = true;
       };
     };
 
@@ -404,29 +305,8 @@ class Grid {
       this.clearGrid();
       this.currentAlgorithm = (speed = this.speed) => {
         this.clearGrid();
-        dijkstra(
-          this.graph.nodes,
-          this.startNode,
-          this.endNode,
-          this.nodeUpdate.bind(this),
-          this.drawPath.bind(this),
-          speed
-        );
-      };
-    };
-
-    document.getElementById("bidirectionalDijkstraAlgBtn").onclick = () => {
-      this.clearGrid();
-      this.currentAlgorithm = (speed = this.speed) => {
-        this.clearGrid();
-        bidirectionalDijkstra(
-          this.graph.nodes,
-          this.startNode,
-          this.endNode,
-          this.nodeUpdate.bind(this),
-          this.drawPath.bind(this),
-          speed
-        );
+        dijkstra(this.graph.nodes, this.startNode, this.endNode, speed);
+        this.isAlgCompleted = true;
       };
     };
 
@@ -434,11 +314,6 @@ class Grid {
       this.clearGrid();
       randomMaze(this.graph.nodes);
     };
-
-    // document.getElementById("backTrackingMazeBtn").onclick = () => {
-    //   this.clearGrid();
-    //   backTrackingMaze(this.graph.nodes, this.startNode);
-    // };
     document.getElementById("firstPatternBtn").onclick = () => {
       this.clearGrid();
       this.clearWalls();
