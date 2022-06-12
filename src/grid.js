@@ -1,11 +1,9 @@
 const Graph = require("./Graph.js");
-const sleep = require("./utils/sleep.js");
 const bfs = require("/algorithms/bfs.js");
 const dfs = require("/algorithms/dfs.js");
 const dijkstra = require("/algorithms/dijkstra.js");
 const astar = require("/algorithms/astar.js");
 const randomMaze = require("./mazeAlgorithms/randomMaze.js");
-// const backTrackingMaze = require("./mazeAlgorithms/backTrackingMaze.js");
 const firstPattern = require("./mazeAlgorithms/firstPattern.js");
 const secondPattern = require("./mazeAlgorithms/secondPattern.js");
 const thirdPattern = require("./mazeAlgorithms/thirdPattern.js");
@@ -16,8 +14,8 @@ class Grid {
     this.col = col;
     this.row = row;
     this.graph = new Graph();
-    this.startNode = 824;
-    this.endNode = 851; //851
+    this.startNode = 851;
+    this.endNode = 878; //851
     this.speed = 1;
     this.isAlgCompleted = false;
     this.startPressed = false;
@@ -32,6 +30,7 @@ class Grid {
     this.createGraph();
     this.addEventListeners();
     this.addButtons();
+    this.toggleTutorialButtons();
   }
 
   createGrid() {
@@ -329,6 +328,89 @@ class Grid {
       this.clearWalls();
       thirdPattern(this.graph.nodes, this.row, this.col);
     };
+  }
+  toggleTutorialButtons(counter = 1) {
+    document.getElementById("skipButton").onclick = () => {
+      document.getElementById("tutorial").style.display = "none";
+    };
+
+    if (document.getElementById("nextButton")) {
+      document.getElementById("nextButton").onclick = () => {
+        if (counter < 9) {
+          counter++;
+        }
+        nextPreviousClick();
+        this.toggleTutorialButtons(counter);
+      };
+    }
+
+    document.getElementById("previousButton").onclick = () => {
+      if (counter > 1) counter--;
+      nextPreviousClick();
+      this.toggleTutorialButtons(counter);
+    };
+
+    function nextPreviousClick() {
+      if (counter === 1) {
+        document.getElementById(
+          "tutorial"
+        ).innerHTML = ` <div id="tutorial-text"><h3>Welcome to Pathfinding Visualizer!</h3>
+        <h5>This tutorial will show you all the features of this application.</h5>
+        <img id="TutorialImage" src="src/styling/balls.jpg"></div>
+        <div id="tutorial-buttons"><button id="skipButton" class="btn btn-default navbar-btn" type="button">Skip Tutorial</button>
+        <button id="nextButton" class="btn btn-default navbar-btn" type="button">Next</button>
+        <button id="previousButton" class="btn btn-default navbar-btn" type="button">Previous</button>
+        </div>`;
+      } else if (counter === 2) {
+        console.log(counter);
+        document.getElementById(
+          "tutorial"
+        ).innerHTML = `<div id="tutorial-text"><h3>Drag nodes and add walls</h3>
+        <h5>You can move start and end nodes,also you can add wall by clicking and dragging on the empty space</h5>
+        <img id="TutorialImage" src="src/styling/demo-dynamic.gif"></div>
+        <div id="tutorial-buttons"><button id="skipButton" class="btn btn-default navbar-btn" type="button">Skip Tutorial</button>
+        <button id="nextButton" class="btn btn-default navbar-btn" type="button">Next</button>
+        <button id="previousButton" class="btn btn-default navbar-btn" type="button">Previous</button>
+        </div>`;
+      } else if (counter === 3) {
+        document.getElementById(
+          "tutorial"
+        ).innerHTML = `<div id="tutorial-text"><h3>Add weights</h3>
+        <h5>To add weights, click on the mouse wheel and drag over an empty area</h5>
+        <img id="TutorialImage" src="src/styling/demo-weights.gif">
+        <div id="tutorial-buttons"><button id="skipButton" class="btn btn-default navbar-btn" type="button">Skip Tutorial</button>
+        <button id="nextButton" class="btn btn-default navbar-btn" type="button">Next</button>
+        <button id="previousButton" class="btn btn-default navbar-btn" type="button">Previous</button>
+        </div>`;
+      } else if (counter === 4) {
+        document.getElementById(
+          "tutorial"
+        ).innerHTML = `<div id="tutorial-text"><h3>Available algorithms</h3>
+        <ul>
+            <li>Astar</li>
+            <li>Dijkstra algorithm</li>
+            <li>Depth-first search</li>
+            <li>Breadth-first search</li>
+        </ul>
+        <h5>More algorithms will be added in the future</h5>
+        <div id="tutorial-buttons"><button id="skipButton" class="btn btn-default navbar-btn" type="button">Skip Tutorial</button>
+        <button id="nextButton" class="btn btn-default navbar-btn" type="button">Next</button>
+        <button id="previousButton" class="btn btn-default navbar-btn" type="button">Previous</button>
+        </div>`;
+      } else if (counter === 5) {
+        document.getElementById(
+          "tutorial"
+        ).innerHTML = `<div id="tutorial-text">
+            <h3>Have fun!</h3>
+            <img id="demo-end" src="src/styling/demo-end.gif">
+        </div>
+        <div id="tutorial-buttons"><button id="skipButton" class="btn btn-default navbar-btn" type="button">Skip
+                Tutorial</button>
+            <button id="nextButton" class="btn btn-default navbar-btn" type="button">Next</button>
+            <button id="previousButton" class="btn btn-default navbar-btn" type="button">Previous</button>
+        </div>`;
+      } else document.getElementById("tutorial").style.display = "none";
+    }
   }
 }
 

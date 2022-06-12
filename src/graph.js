@@ -5,7 +5,6 @@ class Graph {
 
   addNode(value, x, y) {
     this.nodes[value] = [];
-    this.nodes[value].isEnd = false;
     this.nodes[value].isWall = false;
     this.nodes[value].isWeight = false;
     this.nodes[value].positionX = x;

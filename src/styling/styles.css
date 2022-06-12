@@ -1,0 +1,178 @@
+td {
+    border: 1px solid #393e41;
+    background-color: #181a1b;
+    height: 3.2vh;
+    width: 3.2vh;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#grid {
+    margin-left: 3px;
+    margin-top: 18px;
+}
+
+.start {
+    background-color: #00ddff;
+}
+
+.end {
+    background-color: #1eff00;
+}
+
+.wall {
+    background-color: white;
+}
+
+.weight {
+    background-color: coral;
+}
+
+.visited-weight {
+    background-color: rgb(255, 75, 10);
+}
+
+.visited {
+    background-color:#ff009d;
+    animation-duration: 3s;
+    animation-name: visit;
+    
+}
+.instant-visit{
+    background-color:#ff009d;
+}
+
+.path {
+    
+    animation-duration: 2s;
+    animation-name: showPath;
+    background-color: #7f46da;
+}
+.weight-path{
+    animation-duration: 2s;
+    animation-name: showPathWeight;
+    background-color: #5100d4;
+}
+.instant-weight-path {
+    background-color: #5100d4;
+}
+.instant-path {
+    background-color: #7f46da;
+}
+
+body {
+    background-color: #181a1b;
+}
+
+@keyframes showPath{
+    1% {
+        background-color:#fdf100;
+    }
+    20%{
+        background-color: #5b329d;
+    }
+    100% {
+        background-color: #7f46da;
+    }
+}
+@keyframes showPathWeight {
+    1% {
+        background-color: #fdf100;
+    }
+
+    20% {
+        background-color: #5b329d;
+    }
+
+    100% {
+        background-color: #5100d4;
+    }
+}
+
+@keyframes visit {
+
+    1%{
+        background-color:#fdf100;
+    }
+
+    20%{
+        background-color:#49002d;
+    }
+    40%{
+        background-color:#63013d;
+    }
+    50%{
+        background-color:#98015e;
+    }    
+    60%{
+        background-color:#d30383
+    }
+
+    100% {
+        background-color:#ff009d
+    }
+}
+
+#tutorial{
+    background-color: white;
+    position: absolute;
+    width: 89vh;
+    height: 52vh;
+    border: 4px #d2c5c5 solid;
+    border-radius: 10px;
+    float: right;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+#TutorialImage{
+    width: 34vh;
+    height: 30vh;
+    display: inline-block;
+}
+
+#tutorial-text{
+    text-align: center;
+    margin-top: 2vh;
+}
+
+#tutorial-buttons{
+    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    top: 45vh;
+    left: 0;
+    right: 0;
+}
+
+#skipButton{
+    background-color: #00ddff;
+    float: left;
+    margin-left: 10px;
+}
+
+#previousButton{
+background-color: #00ffc3;
+float: right;
+margin-right: 10px;
+}
+
+#nextButton{
+background-color:#1eff00;
+float: right;
+margin-right:15px ;
+}
+#demo-end{
+    width: 50vh;
+    height: 35vh;
+    display: inline-block;
+}
