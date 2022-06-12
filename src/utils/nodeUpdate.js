@@ -6,7 +6,7 @@ async function nodeUpdate(nodeId, speed) {
     node.className === "wall"
   )
     return;
-  if (node.className === "weight") {
+  if (node.className === "weight" || node.className === "visited-weight") {
     node.className = "visited-weight";
     return;
   }
