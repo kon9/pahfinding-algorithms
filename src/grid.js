@@ -392,22 +392,9 @@ class Grid {
             <li>Depth-first search</li>
             <li>Breadth-first search</li>
         </ul>
-        <h5>More algorithms will be added in the future</h5>
         <div id="tutorial-buttons"><button id="skipButton" class="btn btn-default navbar-btn" type="button">Skip Tutorial</button>
         <button id="nextButton" class="btn btn-default navbar-btn" type="button">Next</button>
         <button id="previousButton" class="btn btn-default navbar-btn" type="button">Previous</button>
-        </div>`;
-      } else if (counter === 5) {
-        document.getElementById(
-          "tutorial"
-        ).innerHTML = `<div id="tutorial-text">
-            <h3>Have fun!</h3>
-            <img id="demo-end" src="src/styling/demo-end.gif">
-        </div>
-        <div id="tutorial-buttons"><button id="skipButton" class="btn btn-default navbar-btn" type="button">Skip
-                Tutorial</button>
-            <button id="nextButton" class="btn btn-default navbar-btn" type="button">Next</button>
-            <button id="previousButton" class="btn btn-default navbar-btn" type="button">Previous</button>
         </div>`;
       } else document.getElementById("tutorial").style.display = "none";
     }
