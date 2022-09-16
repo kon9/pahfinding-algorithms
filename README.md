@@ -14,3 +14,4 @@ You can access it here https://kon9.github.io/pathfinding-algorithms/
 •Breadth-first search
 
 •Ida star(weighted)
+![Demo ](https://user-images.githubusercontent.com/38664747/190620564-80ee63f8-8cb4-453d-86ee-03f4412763df.png)
